@@ -15,17 +15,6 @@ import random
 import functions
 
 
-def threshold(img, value, offset):
-    valorUmbralUpper = value + offset
-    valorUmbralLower = value - offset * 1.5
-    print("Upper:" +str(valorUmbralUpper)+";"+"Lower:"+str(valorUmbralLower))
-    thresholded = img
-    thresholded[thresholded > valorUmbralUpper] = 0
-    thresholded[thresholded < valorUmbralLower] = 0
-    return thresholded
-
-
-
 def find_region(img, seed, delta):
 	"""function that applies region growing method
 
@@ -47,15 +36,11 @@ def find_region(img, seed, delta):
 	y = int(seed[0][0])
 
 	val = img[x,y]
-	print("Value:" +str(val))
+	print("Value of pixel" +str(val))
 	lv = val - delta #(lowValue)
 	print("Low:" + str(lv))
 	hv = val + delta #(highValue)
 	print("High:" + str(hv))
-	#print 'value of pixel',val
-
-
-
 
 	seed_pixel = []
 	seed_pixel.append(x)
@@ -75,8 +60,6 @@ def find_region(img, seed, delta):
 	x = [-1, 0, 1, -1, 1, -1, 0, 1]
 	y = [-1, -1, -1, 0, 0, 1, 1, 1]
 	
-
-
 	while( len(region_points)>0):
 		
 		if count == 0:
