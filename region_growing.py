@@ -26,8 +26,8 @@ def threshold(img, value, offset):
 
 
 
-def find_region(img, pseed, delta):
-	"""function that applies the growth of regions
+def find_region(img, seed, delta):
+	"""function that applies region growing method
 
     Parameters:
     -----------
@@ -94,7 +94,7 @@ def find_region(img, pseed, delta):
 					value = img[i+x[k]][j+y[k]]
 					if  value > lv and value < hv:
 						#print '\nbelongs to region',arr[i+x[k]][j+y[k]]
-						print(value)
+						# print(value)
 						img_rg[i+x[k]][j+y[k]]=1
 						p = [0,0]
 						p[0] = i+x[k]
@@ -131,28 +131,15 @@ if __name__== "__main__":
 	sub_win = band[1220:3740, 1190:3850]
 
 
-	rows,columns = np.shape(sub_win)
-	print('\nrows', rows, 'columns', columns)
+	# rows,columns = np.shape(sub_win)
+	# print('\nrows', rows, 'columns', columns)
 
 	fig, ax = plt.subplots()
 	im=ax.imshow(sub_win)
 
-	# plt.show()
+	seed = plt.ginput(1)
 
-
-	pseed = plt.ginput(1)
-	#pseed
-	print(pseed[0][0],pseed[0][1])
-
-	# x = int(pseed[0][1])
-	# y = int(pseed[0][0])
-	# # x = int(179)
-	# # y = int(86)
-	# seed_pixel = []
-	# seed_pixel.append(x)
-	# seed_pixel.append(y)
-
-	print('you clicked:',pseed)
+	print('you clicked:',seed)
 
 	#closing figure
 	plt.close()
@@ -167,25 +154,13 @@ if __name__== "__main__":
 
 
 
-	delta = 8
-	img_out = find_region(sub_win, pseed, delta)
+	delta = 10
+	img_out = find_region(sub_win, seed, delta)
 
 	fig, ax = plt.subplots()
 	### , cmap="Greys_r"
 
 	im=ax.imshow(img_out)
 	plt.show()
-
-
-
-
-delta = 8
-img_out = find_region(sub_win, pseed, delta)
-
-fig, ax = plt.subplots()
-### , cmap="Greys_r"
-
-im=ax.imshow(img_out)
-plt.show()
 
 
