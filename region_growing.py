@@ -36,8 +36,8 @@ def find_region(img, seed, delta):
 	y = int(seed[0][0])
 
 	val = img[x,y]
-	print("Value of pixel" +str(val))
-	lv = val - delta #(lowValue)
+	print("Value of pixel: " +str(val))
+	lv = val - delta - 3 #(lowValue)
 	print("Low:" + str(lv))
 	hv = val + delta #(highValue)
 	print("High:" + str(hv))
@@ -113,12 +113,16 @@ if __name__== "__main__":
 	file = "/home/gag/MyProjects/Image-Segmentation-using-Region-Growing/mapaSantaFe.tif"
 	### se lee la imagen
 	src_ds, band, GeoT, Project = functions.openFileHDF(file, 1)
+	transform = GeoT
+	xmin,xmax,ymin,ymax=transform[0],transform[0]+transform[1]*src_ds.RasterXSize,transform[3]+transform[5]*src_ds.RasterYSize,transform[3]
+
+
 	###sub-window
 	sub_win = band[1220:3740, 1190:3850]
 
 
 	fig, ax = plt.subplots()
-	im=ax.imshow(sub_win)
+	im=ax.imshow(band)
 
 	seed = plt.ginput(1)
 
@@ -127,18 +131,8 @@ if __name__== "__main__":
 	#closing figure
 	plt.close()
 
-
-	# th = threshold(sub_win, -23, 3)
-
-	# fig, ax = plt.subplots()
-	# im=ax.imshow(th)
-
-	# plt.show()
-
-
-
-	delta = 10
-	img_out = find_region(sub_win, seed, delta)
+	delta = 8
+	img_out = find_region(band, seed, delta)
 
 	fig, ax = plt.subplots()
 	### , cmap="Greys_r"
