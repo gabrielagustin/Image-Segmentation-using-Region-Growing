@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+#!/usr/bin/python
+"""
+Created on Thu Aug 22 09:08:04 2019
+@author: gag 
+"""
+
 import math 
 
 from PIL import Image
@@ -5,71 +12,89 @@ from pylab import *
 import matplotlib.cm as cm
 import scipy as sp
 import random
+import functions
 
-im = Image.open('input1.jpg').convert('L')
-arr = np.asarray(im)
 
-out = Image.open('out1.jpg').convert('L')
-arr_out = np.asarray(out)
+def threshold(img, value, offset):
+    valorUmbralUpper = value + offset
+    valorUmbralLower = value - offset * 1.5
+    print("Upper:" +str(valorUmbralUpper)+";"+"Lower:"+str(valorUmbralLower))
+    thresholded = img
+    thresholded[thresholded > valorUmbralUpper] = 0
+    thresholded[thresholded < valorUmbralLower] = 0
+    return thresholded
 
-rows,columns = np.shape(arr)
-#print '\nrows',rows,'columns',columns
-plt.figure()
-plt.imshow(im)
-plt.gray()
-#User selects the intial seed point
-print '\nPlease select the initial seed point'
 
-pseed = plt.ginput(1)
-#pseed
-#print pseed[0][0],pseed[0][1]
 
-x = int(pseed[0][0])
-y = int(pseed[0][1])
-#x = int(179)
-#y = int(86)
-seed_pixel = []
-seed_pixel.append(x)
-seed_pixel.append(y)
+def find_region(img, pseed, delta):
+	"""function that applies the growth of regions
 
-print 'you clicked:',seed_pixel
+    Parameters:
+    -----------
+    img: original image
 
-#closing figure
-plt.close()
+    seed: pixel in which the region's growth will begin
 
-img_rg = np.zeros((rows+1,columns+1))
-img_rg[seed_pixel[0]][seed_pixel[1]] = 255.0
-img_display = np.zeros((rows,columns))
+	delta: from the initial pixel value a delta will be used
 
-region_points = []
-region_points.append([x,y])
+    Returns:
+    --------
+    img_rg: result image, binary image with the region found
 
-def find_region():
-	print '\nloop runs till region growing is complete'
+    """
+
+	x = int(seed[0][1])
+	y = int(seed[0][0])
+
+	val = img[x,y]
+	print("Value:" +str(val))
+	lv = val - delta #(lowValue)
+	print("Low:" + str(lv))
+	hv = val + delta #(highValue)
+	print("High:" + str(hv))
+	#print 'value of pixel',val
+
+
+
+
+	seed_pixel = []
+	seed_pixel.append(x)
+	seed_pixel.append(y)
+
+
+	img_rg = np.zeros((rows+1,columns+1))
+	img_rg[seed_pixel[0]][seed_pixel[1]] = 255.0
+	img_display = np.zeros((rows,columns))
+
+	region_points = []
+	region_points.append([x,y])
+
+	print('\nloop runs till region growing is complete')
 	#print 'starting points',i,j
 	count = 0
 	x = [-1, 0, 1, -1, 1, -1, 0, 1]
 	y = [-1, -1, -1, 0, 0, 1, 1, 1]
 	
+
+
 	while( len(region_points)>0):
 		
 		if count == 0:
 			point = region_points.pop(0)
 			i = point[0]
 			j = point[1]
-		print '\nloop runs till length become zero:'
-		print 'len',len(region_points)
-		#print 'count',count 
-		val = arr[i][j]
-		lt = val - 8
-		ht = val + 8
-		#print 'value of pixel',val
+		# print('\nloop runs till length become zero:')
+		# print('len',len(region_points))
+		# print('count',count)
+
 		for k in range(8):	
 			#print '\ncomparison val:',val, 'ht',ht,'lt',lt
 			if img_rg[i+x[k]][j+y[k]] !=1:
 				try:
-					if  arr[i+x[k]][j+y[k]] > lt and arr[i+x[k]][j+y[k]] < ht:
+					value = img[i+x[k]][j+y[k]]
+					if  value > lv and value < hv:
 						#print '\nbelongs to region',arr[i+x[k]][j+y[k]]
+						print(value)
 						img_rg[i+x[k]][j+y[k]]=1
 						p = [0,0]
 						p[0] = i+x[k]
@@ -90,53 +115,77 @@ def find_region():
 		j = point[1]
 		count = count +1
 		#find_region(point[0], point[1])			 
-		
-find_region()
 
-ground_out = np.zeros((rows,columns))
-
-for i in range(rows):
-	for j in range(columns):
-		if arr_out[i][j] >125:
-			ground_out[i][j] = int(1)
-
-		else:
-			ground_out[i][j] = int(0)
+	return img_rg
 
 
-tp = 0
-tn = 0
-fn = 0
-fp = 0
-
-for i in range(rows):
-	for j in range(columns):
-		if ground_out[i][j] == 1 and img_rg[i][j] == 1:
-			tp = tp + 1
-		if ground_out[i][j] == 0 and img_rg[i][j] == 0:
-			tn = tn + 1
-		if ground_out[i][j] == 1 and img_rg[i][j] == 0:
-			fn = fn + 1
-		if ground_out[i][j] == 0 and img_rg[i][j] == 1:
-			fp = fp + 1
-''' ********************************** Calculation of Tpr, Fpr, F-Score ***************************************************'''
-
-print '\n************Calculation of Tpr, Fpr, F-Score********************'
-
-#TP rate = TP/TP+FN
-tpr= float(tp)/(tp+fn)
-print "\nTPR is:",tpr
-
-#fp rate is
-fpr= float(fp)/(fp+tn)
-print "\nFPR is:",fpr
-
-#F-score as 2TP/(2TP + FP + FN)
-fscore = float(2*tp)/((2*tp)+fp+fn)
-print "\nFscore:",fscore
 
 
-plt.figure()
-plt.imshow(img_rg, cmap="Greys_r")
-plt.colorbar()
+if __name__== "__main__":
+
+
+	file = "/home/gag/MyProjects/Image-Segmentation-using-Region-Growing/mapaSantaFe.tif"
+	### se lee la imagen
+	src_ds, band, GeoT, Project = functions.openFileHDF(file, 1)
+	###sub-window
+	sub_win = band[1220:3740, 1190:3850]
+
+
+	rows,columns = np.shape(sub_win)
+	print('\nrows', rows, 'columns', columns)
+
+	fig, ax = plt.subplots()
+	im=ax.imshow(sub_win)
+
+	# plt.show()
+
+
+	pseed = plt.ginput(1)
+	#pseed
+	print(pseed[0][0],pseed[0][1])
+
+	# x = int(pseed[0][1])
+	# y = int(pseed[0][0])
+	# # x = int(179)
+	# # y = int(86)
+	# seed_pixel = []
+	# seed_pixel.append(x)
+	# seed_pixel.append(y)
+
+	print('you clicked:',pseed)
+
+	#closing figure
+	plt.close()
+
+
+	# th = threshold(sub_win, -23, 3)
+
+	# fig, ax = plt.subplots()
+	# im=ax.imshow(th)
+
+	# plt.show()
+
+
+
+	delta = 8
+	img_out = find_region(sub_win, pseed, delta)
+
+	fig, ax = plt.subplots()
+	### , cmap="Greys_r"
+
+	im=ax.imshow(img_out)
+	plt.show()
+
+
+
+
+delta = 8
+img_out = find_region(sub_win, pseed, delta)
+
+fig, ax = plt.subplots()
+### , cmap="Greys_r"
+
+im=ax.imshow(img_out)
 plt.show()
+
+
