@@ -47,6 +47,9 @@ def find_region(img, seed, delta):
 	seed_pixel.append(y)
 
 
+	rows,columns = np.shape(img)
+	# print('\nrows', rows, 'columns', columns)
+
 	img_rg = np.zeros((rows+1,columns+1))
 	img_rg[seed_pixel[0]][seed_pixel[1]] = 255.0
 	img_display = np.zeros((rows,columns))
@@ -113,9 +116,6 @@ if __name__== "__main__":
 	###sub-window
 	sub_win = band[1220:3740, 1190:3850]
 
-
-	# rows,columns = np.shape(sub_win)
-	# print('\nrows', rows, 'columns', columns)
 
 	fig, ax = plt.subplots()
 	im=ax.imshow(sub_win)
