@@ -11,3 +11,17 @@ It uses image “input1.jpg" along with its ground truth “out1.jpg" to report 
 ## Suggested changes
 
 * re-define function: find_region, add parameter Delta. It is seed +/- delta 
+
+
+Original map
+
+<p align="center">
+  <img width=650 src="original_map.png"/>
+ </p>
+
+
+Region growing map
+
+<p align="center">
+  <img width=650 src="regionGrowing_map.png"/>
+ </p>
